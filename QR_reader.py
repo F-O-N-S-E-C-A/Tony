@@ -1,18 +1,13 @@
 import cv2
 
-def draw(img, points):
-    for i in points:
-        img_draw = cv2.rectangle(img, (int(i[0][0]), int(i[0][1])), (int(i[2][0]), int(i[2][1])), (0, 255, 0), 3)
+def drawBounds(img, points):
+    if points is not None:
+        for i in points:
+            img_draw = cv2.rectangle(img, (int(i[0][0]), int(i[0][1])), (int(i[2][0]), int(i[2][1])), (0, 255, 0), 3)
+        return img_draw
 
-    cv2.imshow("img", img_draw)
-    cv2.waitKey(0)
-    cv2.destroyAllWindows()
+def readQR(img):
+    det = cv2.QRCodeDetector()
+    retval, decoded_info, points, straight_qrcode = det.detectAndDecodeMulti(img)
+    return decoded_info, points
 
-img = cv2.imread("qr_phone.png")
-det = cv2.QRCodeDetector()
-retval, decoded_info, points, straight_qrcode = det.detectAndDecodeMulti(img)
-
-print('position: ', points)
-
-draw(img, points)
-print('uuid: ', decoded_info)
