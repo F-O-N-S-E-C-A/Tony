@@ -1,6 +1,5 @@
 import cv2
 
-
 def draw(img, points):
     for i in points:
         img_draw = cv2.rectangle(img, (int(i[0][0]), int(i[0][1])), (int(i[2][0]), int(i[2][1])), (0, 255, 0), 3)
@@ -15,5 +14,5 @@ retval, decoded_info, points, straight_qrcode = det.detectAndDecodeMulti(img)
 
 print('position: ', points)
 
-draw(img, points)0
+draw(img, points)
 print('uuid: ', decoded_info)
