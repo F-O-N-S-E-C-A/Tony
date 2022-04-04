@@ -3,14 +3,13 @@ import QR_reader
 
 vid = cv2.VideoCapture(0)
 
-while (True):
+while True:
     ret, frame = vid.read()
 
     data, points = QR_reader.readQR(frame)
     print(data)
 
-    if points is not None:
-        QR_reader.drawBounds(frame, points)
+    QR_reader.drawBounds(frame, points)
 
     cv2.imshow('frame', frame)
 
