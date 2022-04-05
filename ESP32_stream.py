@@ -3,11 +3,37 @@ import numpy as np
 from urllib.request import urlopen
 import QR_reader
 import requests
+import threading
+import time
 
-url_stream = 'http://192.168.4.3:81/stream'
-url = 'http://192.168.4.3/action'
+url = 'http://192.168.4.2'
+url_stream = url + ':81/stream'
+url_cmd = url + '/action'
 
-#url_stream = 'http://192.168.4.3'
+
+def sendCommand(str, url_cmd):
+    print("send cmd")
+    headers = {"Content-Type": "application/json; charset=utf-8",
+               "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"}
+    myobj = {'go': bytes(str, 'ASCII')}
+    x = requests.get(url_cmd, params=myobj, headers=headers)
+
+def sendCommands_thread():
+    while True:
+        for i in range(5, 165):
+            CMD = "SERVO_HORIZONTAL-" + str(i)
+            sendCommand(CMD, url_cmd)
+            time.sleep(0.01)
+        for i in range(165, 5, -1):
+            CMD = "SERVO_HORIZONTAL-" + str(i)
+            sendCommand(CMD, url_cmd)
+            time.sleep(0.01)
+
+
+
+
+x = threading.Thread(target=sendCommands_thread, args=())
+x.start()
 
 CAMERA_BUFFRER_SIZE = 4096
 stream = urlopen(url_stream)
@@ -26,6 +52,9 @@ while True:
 
             data, points = QR_reader.readQR(frame) #QR content and position on image
             print(data)
+            if (points is not None) and len(points) > 0:
+                sendCommand("STOP", url_cmd)
+                print("STOP")
 
             QR_reader.drawBounds(frame, points)
 
@@ -45,34 +74,10 @@ while True:
     if k & 0xFF == ord('q'):
         break
 
-    count += 1
-    if count % 103 == 0:
-        headers = {"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"}
+    count +=1
 
-        myobj = {'go': bytes('SERVO_HORIZONTAL-20', 'ASCII')}
+    if count % 100 == 0:
+        sendCommand("FOLLOW_LINE", url_cmd)
 
-        x = requests.get(url, params=myobj, headers=headers)
-        print(x.content)
-    if count % 203 == 0:
-        headers = {"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"}
-
-        myobj = {'go': bytes('SERVO_HORIZONTAL-170', 'ASCII')}
-
-        x = requests.get(url, params=myobj, headers=headers)
-        print(x.content)
-    if count % 5 == 0:
-        headers = {"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"}
-
-        myobj = {'go': bytes('LED_OFF', 'ASCII')}
-
-        x = requests.get(url, params=myobj, headers=headers)
-        print(x.content)
-    if count % 10 == 0:
-        headers = {"Content-Type": "application/json; charset=utf-8", "User-Agent": "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.60 Safari/537.36"}
-
-        myobj = {'go': bytes('FOLLOW_LINE', 'ASCII')}
-
-        x = requests.get(url, params=myobj, headers=headers)
-        print(x.content)
 
 cv.destroyAllWindows()
