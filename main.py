@@ -19,3 +19,6 @@ while True:
 
 vid.release()
 cv2.destroyAllWindows()
+
+
+
