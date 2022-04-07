@@ -26,11 +26,10 @@
 #define ULTRASOUND_ECHO 11
 
 unsigned long whiteLeft, whiteRight;
-bool FLAG_DRIVE = false, FLAG_LOOK_AROUND = false;
+bool FLAG_DRIVE = false, FLAG_LOOK_AROUND = false, FLAG_CHECKPOINT= false;
 unsigned long timeOnWhite = 0;
 bool timeOnWhiteStart = false;
 unsigned long MAXTIMEOUT = 2500;
-
 class DCEngine {
   private:
     byte pin1, pin2, pwm_pin;
@@ -182,8 +181,6 @@ void followLine(){
     tony.leftEngine.drive(-255);
     tony.rightEngine.drive(255);
 
-    delayTime = 5 + 15*(right/4000);
-
     MAXTIMEOUT = 3000;
     timeOnWhiteStart = false;
   }
@@ -191,8 +188,6 @@ void followLine(){
     //Serial.println("Turn right");
     tony.leftEngine.drive(255);
     tony.rightEngine.drive(-255);
-
-    delayTime = 5 + 15*(left/4000);
 
     MAXTIMEOUT = 3000;
     timeOnWhiteStart = false;
@@ -202,20 +197,29 @@ void followLine(){
     if (!timeOnWhiteStart){
       timeOnWhite = millis();
       timeOnWhiteStart = true;
-
-      delayTime = 5;
     }
     
     tony.leftEngine.drive(255);
     tony.rightEngine.drive(255);
   }
+  else {
+    if (FLAG_CHECKPOINT){
+      FLAG_CHECKPOINT = false;
+      FLAG_DRIVE = false;
 
-  delay(5);
+      tony.leftEngine.stopMovement();
+      tony.rightEngine.stopMovement();
+
+      return;
+    }
+  }
+
+  delay(6);
     
   tony.leftEngine.stopMovement();
   tony.rightEngine.stopMovement();
 
-  delay(20);
+  delay(17);
 }
 
 int lookAroundTime = 1000;
@@ -269,6 +273,9 @@ void receiveEvent(int howMany) {
     }
     else if(!strcmp(cmd, "STOP_LOOKING")){
       FLAG_LOOK_AROUND = false;
+    }
+    else if(!strcmp(cmd, "STOP_AT_CHECKPOINT")){
+      FLAG_CHECKPOINT = true;
     }
 }
 
@@ -324,7 +331,7 @@ void loop() {
     distanceToObject = measureDistance();
   }
 
-  if (distanceToObject <= 5){
+  if (distanceToObject <= 7){
     
   }
   else {
