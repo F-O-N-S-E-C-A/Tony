@@ -1,7 +1,6 @@
 import qrcode
 import uuid
 
-
 def generate_QR():
     box_id = uuid.uuid1()
     qr = qrcode.QRCode(

@@ -8,6 +8,7 @@ while True:
 
     data, points = QR_reader.readQR(frame)
     print(data)
+    print(points)
 
     QR_reader.drawBounds(frame, points)
 

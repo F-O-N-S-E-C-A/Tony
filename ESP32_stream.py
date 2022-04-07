@@ -23,28 +23,10 @@ box1 = "ba721314-b4b8-11ec-ad41-acde48001122"
 box2 = "ba6ddf56-b4b8-11ec-ad41-acde48001122"
 
 
-url = 'http://192.168.4.3'
+url = 'http://192.168.4.4'
 url_stream = url + ':81/stream'
 url_cmd = url + '/action'
 
-look_around_angle = 20
-
-'''def server():
-    HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
-    PORT = 2000  # Port to listen on (non-privileged ports are > 1023)
-
-    with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
-        s.bind((HOST, PORT))
-        s.listen()
-        conn, addr = s.accept()
-        with conn:
-            print(f"Connected by {addr}")
-            while True:
-                data = conn.recv(1024)
-                
-                if not data:
-                    break
-                conn.sendall(data)'''
 
 
 def cmd(str, url_cmd):
@@ -56,20 +38,22 @@ def cmd(str, url_cmd):
 
 
 def sendCommands_thread():
+    cmd('VERTICAL_SERVO-60', url_cmd)
+
     while True:
+
         cmd('FOLLOW_LINE', url_cmd)
         time.sleep(6)
         cmd('STOP', url_cmd)
-        look_around_time = 1000
-        cmd('LOOK_AROUND-' + str(look_around_time), url_cmd)
-        print(look_around_time * (160 / look_around_angle))
-        time.sleep(look_around_time * (160/look_around_angle))
+
+        cmd('LOOK_AROUND', url_cmd)
+        time.sleep(5)
         cmd('STOP_LOOKING', url_cmd)
+        cmd('STOP_LOOKING', url_cmd)
+        cmd('HORIZONTAL_SERVO-90', url_cmd)
 
 
-def stream():
-
-    box = box2
+def find_box(box_id):
 
     x = threading.Thread(target=sendCommands_thread, args=())
     x.start()
@@ -91,12 +75,10 @@ def stream():
 
                 data, points = QR_reader.readQR(frame) #QR content and position on image
                 print(data)
-                '''if (points is not None) and len(points) > 0:
-                    cmd("STOP", url_cmd)
-                    print("STOP")'''
+
                 if data is not None:
                     for d in data:
-                        if d == box:
+                        if d == box_id:
                             cmd("LED_ON", url_cmd)
                             time.sleep(0.5)
                             cmd("LED_OFF", url_cmd)
@@ -123,8 +105,10 @@ def stream():
 
     cv.destroyAllWindows()
 
+
 def main():
-    stream()
+    find_box(box1)
+
 
 if __name__ == "__main__":
     main()
