@@ -23,7 +23,7 @@ box1 = "ba721314-b4b8-11ec-ad41-acde48001122"
 box2 = "ba6ddf56-b4b8-11ec-ad41-acde48001122"
 
 
-url = 'http://192.168.4.4'
+url = 'http://192.168.4.2'
 url_stream = url + ':81/stream'
 url_cmd = url + '/action'
 

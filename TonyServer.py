@@ -1,4 +1,3 @@
-import socket
 import cv2 as cv
 import numpy as np
 from urllib.request import urlopen
@@ -6,14 +5,21 @@ import QR_reader
 import requests
 import threading
 import time
+import socket
 import speech_recognition as sr
 
-
+'''
+ -- ARDUINO COMMANDS --
+LED_ON
+LED_OFF
+FOLLOW_LINE
+STOP
+LOOK_AROUND
+STOP_LOOKING
+HORIZONTAL_SERVO-100
+VERTICAL_SERVO-100
+'''
 PORT = 1999  # Server port
-
-url = 'http://192.168.4.2'
-url_stream = url + ':81/stream'
-url_cmd = url + '/action'
 
 boxes = {"fruit": "ba721314-b4b8-11ec-ad41-acde48001122",
          "vodka": "ba683fec-b4b8-11ec-ad41-acde48001122",
@@ -22,6 +28,10 @@ boxes = {"fruit": "ba721314-b4b8-11ec-ad41-acde48001122",
          "arduino components": "ba70a89e-b4b8-11ec-ad41-acde48001122",
          "donut": "ba74fc46-b4b8-11ec-ad41-acde48001122"}
 
+
+url = 'http://192.168.4.2'
+url_stream = url + ':81/stream'
+url_cmd = url + '/action'
 
 class SearchMovement:
 
@@ -46,16 +56,6 @@ class SearchMovement:
             cmd('HORIZONTAL_SERVO-90', url_cmd)
 
 
-def speech_recognition():
-    r = sr.Recognizer()
-    mic = sr.Microphone()
-
-    with mic as source:
-        r.adjust_for_ambient_noise(source)
-        audio = r.listen(source)
-        return r.recognize_google(audio)
-
-
 def serve():
     print("Server")
     with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
@@ -77,7 +77,7 @@ def serve():
                         if find_box(box_id=id) == 0:
                             response = "BOX_FOUND:" + id
                             print(response)
-                            conn.sendall(response.encode())
+                            #conn.sendall(response.encode())
                     elif data[0] == "VOICE_RECOGNITION":
                         text = speech_recognition()
                         text.strip().lower()
@@ -87,13 +87,22 @@ def serve():
                             if find_box(box_id=id) == 0:
                                 response = "BOX_FOUND:" + id
                                 print(response)
-                                conn.sendall(response.encode())
+                                #conn.sendall(response.encode())
                         else:
                             response = "BOX_NOT_AVAILABLE:" + id
                             print(response)
-                            conn.sendall(response.encode())
+                            #conn.sendall(response.encode())
                         print("over")
 
+
+def speech_recognition():
+    r = sr.Recognizer()
+    mic = sr.Microphone()
+
+    with mic as source:
+        r.adjust_for_ambient_noise(source)
+        audio = r.listen(source)
+        return r.recognize_google(audio)
 
 
 def cmd(str, url_cmd):
@@ -107,9 +116,8 @@ def cmd(str, url_cmd):
 def find_box(box_id):
 
     search_movement = SearchMovement()
-    thread_sm = threading.Thread(target=search_movement.run(), args=())
+    thread_sm = threading.Thread(target=search_movement.run, args=())
     thread_sm.start()
-
 
     CAMERA_BUFFRER_SIZE = 4096
     stream = urlopen(url_stream)
@@ -132,20 +140,20 @@ def find_box(box_id):
                 if data is not None:
                     for d in data:
                         if d == box_id:
-                            cmd("LED_ON", url_cmd)
-                            time.sleep(0.5)
-                            cmd("LED_OFF", url_cmd)
+                            if d == box_id:
+                                cmd("LED_ON", url_cmd)
+                                time.sleep(0.5)
+                                cmd("LED_OFF", url_cmd)
 
-                            search_movement.terminate()
-                            thread_sm.join()
+                                search_movement.terminate()
+                                thread_sm.join()
 
-                            cmd('FOLLOW_LINE', url_cmd)
-                            cmd('STOP_AT_CHECKPOINT', url_cmd)
+                                cmd('FOLLOW_LINE', url_cmd)
+                                cmd('STOP_AT_CHECKPOINT', url_cmd)
 
-                            print("Box Found!!")
+                                print("Box Found!!")
 
-                            return 0
-
+                                return 0
 
                 QR_reader.drawBounds(frame, points)
 
@@ -170,6 +178,7 @@ def find_box(box_id):
 
 def main():
     serve()
+    #find_box(box_id=boxes["pizza"])
 
 
 if __name__ == "__main__":
