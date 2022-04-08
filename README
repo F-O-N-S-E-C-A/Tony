@@ -1,0 +1,57 @@
+-- TONY --
+
+
+-- Required platforms and prerequisites --
+
+- Server
+    - Python3
+
+- Arduino
+    - TONY robot
+    - Arduino IDE installed
+
+- OS app
+    - Apple Computer
+    - XCode installation
+    - iOS physical/simulated device
+
+- ESP32_CAM
+    - Arduino IDE
+    - ESP32 Library
+
+
+-- Setup Instructions --  
+
+1. Setup the Server
+	1.1 Open terminal on the project folder and run: ./server_setup.sh
+	1.2 Run: python3 TonyServer.py
+
+2. Setup the Arduino
+	2.1 Having the robot in hand:
+		2.1.1 Connect the arduino to the pc via USB
+		2.1.2 Upload the code using Arduino IDE
+
+3. Setup the IOS app
+	3.1 Open the project on XCode
+	3.2 Connect the iPhone to the pc
+	3.3 Build and upload the project
+	3.4 Run the app from the iOS device
+
+4. Setup the ESP32_CAM
+	4.1 Connect ESP32_CAM to pc
+	4.2 Upload code using Arduino IDE
+
+Instructions to operate the Robot: 
+(Please run the setup instructions first)
+
+1. Open the App
+
+2. Select the package that you want to find, you have to options: 
+	2.1 Select a package from the list by clicking the "bag" button next to it
+	2.2 Click the microphone button and say out loud the name of the package
+
+3. TONY Robot will find your package and deliver it to you
+
+
+
+Made by Tiago Fonseca & João Lopes & Maria Gomes
