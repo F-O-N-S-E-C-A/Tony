@@ -21,6 +21,7 @@ while True:
     if CMD == "show":
         for c in cmds:
             print(c)
+
     CMD = CMD.strip().replace(" ", "_").upper()
     if CMD.split("-")[0] in cmds:
         TonyServer.cmd(CMD, url_cmd)
