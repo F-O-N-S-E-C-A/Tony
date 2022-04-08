@@ -202,7 +202,11 @@ void followLine(){
     tony.leftEngine.drive(255);
     tony.rightEngine.drive(255);
   }
+<<<<<<< HEAD
   else if(left > black && right > black){
+=======
+  else {
+>>>>>>> dcaffcbb30cb49009e9bbea36feab0805516118c
     if (FLAG_CHECKPOINT){
       FLAG_CHECKPOINT = false;
       FLAG_DRIVE = false;
@@ -210,13 +214,20 @@ void followLine(){
       tony.leftEngine.stopMovement();
       tony.rightEngine.stopMovement();
 
+<<<<<<< HEAD
       delay(5000);
+=======
+      //Delay? delay(5000);
+>>>>>>> dcaffcbb30cb49009e9bbea36feab0805516118c
 
       return;
     }
     else{
+<<<<<<< HEAD
       tony.leftEngine.drive(255);
       tony.rightEngine.drive(255);
+=======
+>>>>>>> dcaffcbb30cb49009e9bbea36feab0805516118c
       return;
     }
   }
