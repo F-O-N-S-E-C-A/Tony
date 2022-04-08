@@ -1,18 +1,14 @@
 //
 //  ContentView.swift
-//  TONY_IOS
+//  TONY_IOS2
 //
-//  Created by João Lopes on 07/04/2022.
+//  Created by João Lopes on 08/04/2022.
 //
 
 import SwiftUI
 import Network
-import MobileCoreServices
 
 struct ContentView: View {
-    
-    @State private var showingAlert = false
-    @State private var strrcv = ""
     @State private var encomendas = [
         "Fruit": "ba721314-b4b8-11ec-ad41-acde48001122",
         "Vodka": "ba683fec-b4b8-11ec-ad41-acde48001122",
@@ -23,39 +19,42 @@ struct ContentView: View {
     ] //Encomendas
     
     var body: some View {
-        VStack (spacing: 0) {
-            GeometryReader { g in
-                ScrollView {
-                    Text("Encomendas")
-                    List {
-                        ForEach(self.encomendas.sorted(by: >), id: \.key) { key, value in
+        VStack {
+            ScrollView {
+                VStack (spacing: 75){
+                    ForEach(self.encomendas.sorted(by: >), id: \.key) { key, value in
+                        HStack {
                             Text(key)
-                                .onTapGesture {
-                                    //ENVIA COMANDO
-                                    connectToTcp(str: "FIND:" + value)
-                                    showingAlert = true
-                                    print("A")
-                                }
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                connectToTcp(str: "FIND:" + value)
+                            }) {
+                               // Some view, example below uses Image
+                               Image(systemName: "bag.fill")
+                            }.scaleEffect(3)
                         }
-                        .onDelete { index in
-                            // delete item
-                        }
-                    }.frame(width: g.size.width - 5, height: g.size.height - 50, alignment: .center)
-                    
-                }
-            }
+                    }
+                    .onDelete { index in
+                        // delete item
+                    }
+            }.padding(50)
+            
+        }
+            
+            Spacer()
             
             Button(action: {
-                showingAlert = true
                 connectToTcp(str: "VOICE_RECOGNITION")
             }) {
                // Some view, example below uses Image
                Image(systemName: "mic.fill")
+                    .foregroundColor(.white)
             }.scaleEffect(3)
-            //.alert(isPresented: $showingAlert) {
-             //           Alert(title: Text(strrcv), message: Text("ALERTA"), dismissButton: .default(Text("OK")))
-               //     }
+                .padding(70)
         }
+        .preferredColorScheme(.dark)
     }
     
     func connectToTcp(str: String) {
@@ -100,30 +99,9 @@ struct ContentView: View {
                     }
                 })))
             }
-        
-        func receivemsg(){
-        connection.receiveMessage { (data, context, isComplete, error) in
-            if (isComplete) {
-                print("Receive is complete, count bytes: \(data!.count)")
-                strrcv = String(bytes: data!, encoding: .utf8)!
-                print(strrcv)
-                if (data != nil) {
-    //                    print(data!.byteToHex())
-                } else {
-                    print("Data == nil")
-                }
-            }
-        }
-        }
-        
         //connection.cancel()
         }
 }
-
-
-    
-        //
-    //}
 
 struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
